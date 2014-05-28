@@ -1,0 +1,70 @@
+COMPILER_FLAGS=-Werror -g -O2  # AUTOGEN
+    
+CLANG_COMPILER_WARN=-Werror -Wall -fmessage-length=0 -fdiagnostics-print-source-range-info -fdiagnostics-show-category=id -fdiagnostics-parseable-fixits -Wno-trigraphs -Wmissing-prototypes -Wreturn-type -Wparentheses -Wswitch -Wno-unused-parameter -Wunused-variable -Wunused-value -Wno-sign-conversion # AUTOGEN
+GCC_COMPILER_WARN=-Werror -Wall -fmessage-length=0 -Wno-trigraphs -Wmissing-prototypes -Wreturn-type -Wparentheses -Wswitch -Wno-unused-parameter -Wunused-variable -Wunused-value # AUTOGEN
+GXX_COMPILER_WARN=-Werror -Wall -fmessage-length=0 -Wno-trigraphs -Wreturn-type -Wparentheses -Wswitch -Wno-unused-parameter -Wunused-variable -Wunused-value # AUTOGEN
+COMPILER_WARN=$(CLANG_COMPILER_WARN) # AUTOGEN
+COMPILER_WARN=$(GXX_COMPILER_WARN) # AUTOGEN
+COMPILER_WARN=$(GCC_COMPILER_WARN) # AUTOGEN
+# CC=clang # AUTOGEN
+CC=gcc # AUTOGEN
+# CC=cc # AUTOGEN
+# CC=g++ # AUTOGEN
+    
+EXE= # AUTOGEN
+LDLIBS= # AUTOGEN
+CFLAGS=$(COMPILER_FLAGS) $(COMPILER_WARN) # AUTOGEN
+LDLIBS=
+COMPILER_FLAGS+=-DVERSION=\"0.1.2\"
+
+#
+# Useful if on MacOS to do performance analysis with instruments
+#
+# LDLIBS=-L/usr/local/lib -Wl,-framework,OpenGL -Wl,-framework,Cocoa -Wl,-framework,ApplicationServices -Wl,-framework,Carbon -Wl,-framework,AudioToolbox -Wl,-framework,AudioUnit -Wl,-framework,IOKit 
+
+NAME=fatdisk
+OBJDIR=.o
+
+FATDISK_OBJECTS=			\
+    $(OBJDIR)/backtrace.o		\
+    $(OBJDIR)/fat.o			\
+    $(OBJDIR)/command.o			\
+    $(OBJDIR)/file.o			\
+    $(OBJDIR)/dir.o			\
+    $(OBJDIR)/disk.o			\
+    $(OBJDIR)/log.o			\
+    $(OBJDIR)/main.o			\
+    $(OBJDIR)/string.o			\
+    $(OBJDIR)/util.o			\
+    $(OBJDIR)/tree.o			\
+    $(OBJDIR)/ptrcheck.o		\
+
+#
+# compile
+#
+$(OBJDIR)/%.o: %.c
+	@echo $(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+#
+# link
+#
+ALL_FATDISK_OBJECTS=$(FATDISK_OBJECTS) $(RAMDISK_DATA_OBJECTS)
+
+TARGET_FATDISK=$(NAME)$(EXE)
+
+$(TARGET_FATDISK): $(ALL_FATDISK_OBJECTS)
+	$(CC) $(ALL_FATDISK_OBJECTS) $(LDLIBS) -o $(TARGET_FATDISK)
+	ln -sf $(TARGET_FATDISK) $(NAME)
+
+#
+# To force clean and avoid "up to date" warning.
+#
+.PHONY: clean
+
+clean:
+	rm -rf $(OBJDIR)
+	mkdir -p $(OBJDIR)
+	rm -rf $(TARGET_FATDISK) stdout.txt stderr.txt
+
+all: $(TARGET_FATDISK)
