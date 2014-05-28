@@ -192,7 +192,7 @@ make $CORES $* all
 if [ $? -eq 0 ]
 then
     echo
-    log_info "Run fatdisk -h for more info. Or run TESTME."
+    log_info "Run fatdisk -h for more info. Or run ./TESTME"
 
     rm -f Makefile.bak
 else
