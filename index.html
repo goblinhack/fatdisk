@@ -13,153 +13,160 @@
 
   <body>
 
-<p>
-fatdisk is a utility that allows you to perform various operations on files
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/goblinhack/fatdisk">View on GitHub</a>
+
+          <h1 id="project_title">Fatdisk</h1>
+          <h2 id="project_tagline">fatdisk, a utility to allow mountless modification of DOS disks</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/goblinhack/fatdisk/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/goblinhack/fatdisk/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>fatdisk is a utility that allows you to perform various operations on files
 on a DOS formatted disk image in FAT12,16,32 formats without needing to do any
-mounting of the disk image, or needing root or sudo access.
+mounting of the disk image, or needing root or sudo access.</p>
 
-It can extract files from the DOS disk to the local harddrive, and likewise
+<p>It can extract files from the DOS disk to the local harddrive, and likewise
 can import files from the local disk back onto the DOS disk. Additionally
-you can do basic operations like list, cat, hexdump etc...
+you can do basic operations like list, cat, hexdump etc...</p>
 
-Lastly this tool can also format and partition a disk, setting up the FAT
+<p>Lastly this tool can also format and partition a disk, setting up the FAT
 filesystem and even copying in a bootloader like grub. This is a bit 
-experimental so use with care.
+experimental so use with care.</p>
 
-You may specify the partition of the disk the tool is to look for, but it
+<p>You may specify the partition of the disk the tool is to look for, but it
 will default to partition 0 if not. And if no partition info is found, it
-will do a hunt of the disk to try and find it.
+will do a hunt of the disk to try and find it.</p>
 
-<code>
-Usage: fatdisk [OPTIONS] disk-image-file [COMMAND]
+<p>Usage: fatdisk [OPTIONS] disk-image-file [COMMAND]</p>
 
-COMMAND are things like extract, rm, ls, add, info, summary, format.
+<p>COMMAND are things like extract, rm, ls, add, info, summary, format.
 Options:
         --verbose        : print lots of disk info
         -verbose         :
-        -v               :
+        -v               :</p>
 
-        --quiet          : print less info when adding/removing
-        -quiet           :
-        -q               :
+<pre><code>    --quiet          : print less info when adding/removing
+    -quiet           :
+    -q               :
 
-        --debug          : print internal debug info
-        -debug           :
-        -d               :
+    --debug          : print internal debug info
+    -debug           :
+    -d               :
 
-        --offset         : offset to start of disk
-        -offset          : e.g. -o 32256, -o 63s -o 0x7e00
-        -o               :
+    --offset         : offset to start of disk
+    -offset          : e.g. -o 32256, -o 63s -o 0x7e00
+    -o               :
 
-        --partition      : partition to use
-        -partition       :
-        -p               :
+    --partition      : partition to use
+    -partition       :
+    -p               :
 
-        --sectors_per_cluster : sectors per cluster
-        -sectors_per_cluster  :
-        -S               :
+    --sectors_per_cluster : sectors per cluster
+    -sectors_per_cluster  :
+    -S               :
 
-        --sectorsize     : default 512
-        -sectorsize      :
+    --sectorsize     : default 512
+    -sectorsize      :
 
-        --help           : this help
-        -help            :
-        -h               :
+    --help           : this help
+    -help            :
+    -h               :
 
-        --version        : tool version number
-        -version         :
-        -ver             :
+    --version        : tool version number
+    -version         :
+    -ver             :
+</code></pre>
 
-Commands:
+<p>Commands:</p>
 
-        info             : print disk info
-        i                :
+<pre><code>    info             : print disk info
+    i                :
 
-        summary          : print disk info summary
-        sum              :
-        s                :
+    summary          : print disk info summary
+    sum              :
+    s                :
 
-        list      <pat>  : list a file or dir
-        ls        <pat>  :
-        l         <pat>  :
+    list      &lt;pat&gt;  : list a file or dir
+    ls        &lt;pat&gt;  :
+    l         &lt;pat&gt;  :
 
-        find      <pat>  : find and raw list files
-        fi        <pat>  :
-        f         <pat>  :
+    find      &lt;pat&gt;  : find and raw list files
+    fi        &lt;pat&gt;  :
+    f         &lt;pat&gt;  :
 
-        extract   <pat>  : extract a file or dir
-        x         <pat>  :
+    extract   &lt;pat&gt;  : extract a file or dir
+    x         &lt;pat&gt;  :
 
-        add       <pat>  : add a file or dir, keeping same
-        a         <pat>  : full pathname on the disk image
+    add       &lt;pat&gt;  : add a file or dir, keeping same
+    a         &lt;pat&gt;  : full pathname on the disk image
 
-        fileadd   local-name [remote-name]
-                         : add a file with a different name from source
-        f         <pat>  :
+    fileadd   local-name [remote-name]
+                     : add a file with a different name from source
+    f         &lt;pat&gt;  :
 
-        remove    <pat>  : remove a file or dir
-        rm        <pat>  :
-        r         <pat>  :
+    remove    &lt;pat&gt;  : remove a file or dir
+    rm        &lt;pat&gt;  :
+    r         &lt;pat&gt;  :
 
-        hexdump          : include hex dump of files
-        hex              :
-        h                :
+    hexdump          : include hex dump of files
+    hex              :
+    h                :
 
-        cat              : raw dump of file to console
-        ca               :
-        c                :
+    cat              : raw dump of file to console
+    ca               :
+    c                :
 
-        format
-               size xG/xM
-               [part 0-3]           select partiton
-               [zero]               zero sectors
-               [bootloader <file>]  install bootloader
-               [<disktype>]         select filesys type
-               where <disktype> is: Empty FAT12 XENIX-root XENIX-usr Small-FAT16 Extended FAT16 HPFS/NTFS AIX AIX-bootable OS/2-boot-mgr FAT32 FAT32-LBA FAT16-LBA Extended-LBA OPUS Hidden-FAT12 Compaq-diag Hidd-Sm-FAT16 Hidd-FAT16 Hidd-HPFS/NTFS AST-SmartSleep Hidd-FAT32 Hidd-FAT32-LBA Hidd-FAT16-LBA NEC-DOS Plan-9 PMagic-recovery Venix-80286 PPC-PReP-Boot SFS QNX4.x QNX4.x-2nd-part QNX4.x-3rd-part OnTrack-DM OnTrackDM6-Aux1 CP/M OnTrackDM6-Aux3 OnTrack-DM6 EZ-Drive Golden-Bow Priam-Edisk SpeedStor GNU-HURD/SysV Netware-286 Netware-386 DiskSec-MltBoot PC/IX Minix-<1.4a Minix->1.4b Linux-swap Linux OS/2-hidden-C: Linux-extended NTFS-volume-set NTFS-volume-set Linux-plaintext Linux-LVM Amoeba Amoeba-BBT BSD/OS Thinkpad-hib FreeBSD OpenBSD NeXTSTEP Darwin-UFS NetBSD Darwin-boot BSDI-fs BSDI-swap Boot-Wizard-Hid Solaris-boot Solaris DRDOS/2-FAT12 DRDOS/2-smFAT16 DRDOS/2-FAT16 Syrinx Non-FS-data CP/M/CTOS Dell-Utility BootIt DOS-access DOS-R/O SpeedStor BeOS-fs EFI-GPT EFI-FAT Lnx/PA-RISC-bt SpeedStor DOS-secondary SpeedStor Lnx-RAID-auto LANstep 
+    format
+           size xG/xM
+           [part 0-3]           select partiton
+           [zero]               zero sectors
+           [bootloader &lt;file&gt;]  install bootloader
+           [&lt;disktype&gt;]         select filesys type
+           where &lt;disktype&gt; is: Empty FAT12 XENIX-root XENIX-usr Small-FAT16 Extended FAT16 HPFS/NTFS AIX AIX-bootable OS/2-boot-mgr FAT32 FAT32-LBA FAT16-LBA Extended-LBA OPUS Hidden-FAT12 Compaq-diag Hidd-Sm-FAT16 Hidd-FAT16 Hidd-HPFS/NTFS AST-SmartSleep Hidd-FAT32 Hidd-FAT32-LBA Hidd-FAT16-LBA NEC-DOS Plan-9 PMagic-recovery Venix-80286 PPC-PReP-Boot SFS QNX4.x QNX4.x-2nd-part QNX4.x-3rd-part OnTrack-DM OnTrackDM6-Aux1 CP/M OnTrackDM6-Aux3 OnTrack-DM6 EZ-Drive Golden-Bow Priam-Edisk SpeedStor GNU-HURD/SysV Netware-286 Netware-386 DiskSec-MltBoot PC/IX Minix-&lt;1.4a Minix-&gt;1.4b Linux-swap Linux OS/2-hidden-C: Linux-extended NTFS-volume-set NTFS-volume-set Linux-plaintext Linux-LVM Amoeba Amoeba-BBT BSD/OS Thinkpad-hib FreeBSD OpenBSD NeXTSTEP Darwin-UFS NetBSD Darwin-boot BSDI-fs BSDI-swap Boot-Wizard-Hid Solaris-boot Solaris DRDOS/2-FAT12 DRDOS/2-smFAT16 DRDOS/2-FAT16 Syrinx Non-FS-data CP/M/CTOS Dell-Utility BootIt DOS-access DOS-R/O SpeedStor BeOS-fs EFI-GPT EFI-FAT Lnx/PA-RISC-bt SpeedStor DOS-secondary SpeedStor Lnx-RAID-auto LANstep 
+</code></pre>
 
-Examples:
+<p>Examples:</p>
 
-  $ fatdisk mybootdisk ls
+<p>$ fatdisk mybootdisk ls
     ----daD            0       2013 Jan 02   locale/             LOCALE
     -----aD        18573       2013 Jan 02    ast.mo             AST.MO
-    ...
+    ...</p>
 
-  $ fatdisk mybootdisk info
+<p>$ fatdisk mybootdisk info</p>
 
-  $ fatdisk mybootdisk summary
+<p>$ fatdisk mybootdisk summary</p>
 
-  $ fatdisk mybootdisk extract dir
-					-- dumps dir to the local disk
+<p>$ fatdisk mybootdisk extract dir
+                    -- dumps dir to the local disk
   $ fatdisk mybootdisk rm dir
-					-- recursively remove dir
-  $ fatdisk mybootdisk rm dir/*/*.c
-					-- selectively remove files
+                    -- recursively remove dir
+  $ fatdisk mybootdisk rm dir/<em>/</em>.c
+                    -- selectively remove files
   $ fatdisk mybootdisk add dir
-					-- recursively add dir to the disk
+                    -- recursively add dir to the disk
   $ fatdisk mybootdisk hexdump foo.c
-					-- dump a file from the disk
+                    -- dump a file from the disk</p>
 
-  $ fatdisk mybootdisk format size 1G name MYDISK part 0 50% \
-      bootloader grub_disk part 1 50% fat32 bootloader grub_disk
+<p>$ fatdisk mybootdisk format size 1G name MYDISK part 0 50% \
+      bootloader grub_disk part 1 50% fat32 bootloader grub_disk</p>
 
-					-- create and format a 1G disk
-					   with 2 FAT 32 partitions and grub
-					   installed in sector 0 of part 0
+<pre><code>                -- create and format a 1G disk
+                   with 2 FAT 32 partitions and grub
+                   installed in sector 0 of part 0
+</code></pre>
 
-</code>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-Written by Neil McGill, goblinhack@gmail.com, with special thanks
-to Donald Sharp, Andy Dalton and Mike Woods
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Written by Neil McGill, <a href="mailto:goblinhack@gmail.com">goblinhack@gmail.com</a>, with special thanks
+to Donald Sharp, Andy Dalton and Mike Woods</p>
       </section>
     </div>
 
