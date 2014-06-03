@@ -51,7 +51,7 @@ void VER (const char *fmt, ...)
 {
     va_list args;
 
-    if (!opt_verbose) {
+    if (!opt_verbose && !opt_debug2) {
         return;
     }
 
@@ -169,6 +169,35 @@ void DBG4 (const char *fmt, ...)
 
     va_start(args, fmt);
     dbg4_(fmt, args);
+    va_end(args);
+}
+
+static void dbg5_ (const char *fmt, va_list args)
+{
+    uint32_t len;
+
+    buf[0] = '\0';
+    len = (uint32_t)strlen(buf);
+    vsnprintf(buf + len, sizeof(buf) - len, fmt, args);
+
+    puts(buf);
+    fflush(stdout);
+}
+
+void DBG5 (const char *fmt, ...)
+{
+    va_list args;
+
+    if (opt_debug5) {
+        /*
+         * Debug.
+         */
+    } else {
+        return;
+    }
+
+    va_start(args, fmt);
+    dbg5_(fmt, args);
     va_end(args);
 }
 

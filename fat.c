@@ -2137,7 +2137,14 @@ file_hexdump (disk_t *disk, const char *filename, fat_dirent_t *dirent)
     }
 
     if (size > 0) {
-        DIE("size %" PRIu64 " left over", size);
+        DIE("Premature end of file detected. There are size %" PRIu64 
+            " bytes left over and not read from clusters. "
+            "Cluster size is %d bytes, so looks "
+            "like %" PRIu64 " clusters "
+            "are missing from this corrupted file", 
+            size,
+            cluster_size(disk),
+            size / cluster_size(disk));
     }
 
     myfree(empty_sector);
@@ -2234,7 +2241,14 @@ file_cat (disk_t *disk, const char *filename, fat_dirent_t *dirent)
     }
 
     if (size > 0) {
-        DIE("size %" PRIu64 " left over", size);
+        DIE("Premature end of file detected. There are size %" PRIu64 
+            " bytes left over and not read from clusters. "
+            "Cluster size is %d bytes, so looks "
+            "like %" PRIu64 " clusters "
+            "are missing from this corrupted file", 
+            size,
+            cluster_size(disk),
+            size / cluster_size(disk));
     }
 
     myfree(empty_sector);
@@ -2276,6 +2290,8 @@ static boolean file_extract (disk_t *disk, const char *filename,
      */
     size = dirent->size;
 
+    uint32_t last_ok_cluster = 0;
+
     while (!cluster_endchain(disk, cluster)) {
 
         VER("Extract cluster %" PRIu32 " (%s) to disk image",
@@ -2306,7 +2322,13 @@ static boolean file_extract (disk_t *disk, const char *filename,
 
         myfree(data);
 
+        DBG5("Finished cluster %" PRIu32 " (%08X)", cluster, cluster);
+
+        last_ok_cluster = cluster;
+
         cluster = cluster_next(disk, cluster);
+
+        DBG5("Next     cluster %" PRIu32 " (%08X)", cluster, cluster);
 
         if (!strcmp(filename, ".") || !strcmp(filename, "..")) {
             /*
@@ -2317,7 +2339,39 @@ static boolean file_extract (disk_t *disk, const char *filename,
     }
 
     if (size > 0) {
-        DIE("size %" PRIu64 " left over", size);
+        /*
+         * Disk corruption. Try to print some useful info for analyzing the
+         * bad clusters.
+         */
+        if (opt_debug5) {
+            DBG5("Last ok  cluster %" PRIu32 " (%08X)", 
+                last_ok_cluster, last_ok_cluster);
+
+            int debug_clusters;
+
+            for (debug_clusters = -2; debug_clusters <= 2; debug_clusters++) {
+
+                DBG5("Debug last ok cluster %" PRIu32 " (%08X) + %d", 
+                    last_ok_cluster + debug_clusters, 
+                    last_ok_cluster + debug_clusters,
+                    debug_clusters);
+
+                char *data = 
+                    cluster_read(disk, last_ok_cluster + debug_clusters, 1);
+                hex_dump(data, 0, cluster_size(disk));
+                myfree(data);
+            }
+        }
+
+        DIE("Premature end of file detected. There are size %" PRIu64 
+            " bytes left over and not read from clusters. "
+            "Cluster size is %d bytes, so looks "
+            "like %" PRIu64 " clusters "
+            "are missing from this corrupted file. Last cluster was %d.", 
+            size,
+            cluster_size(disk),
+            size / cluster_size(disk),
+            cluster);
     }
 
     if (!opt_quiet) {

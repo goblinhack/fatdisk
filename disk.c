@@ -1205,8 +1205,8 @@ cluster_read (disk_t *disk, uint32_t cluster, uint32_t count)
     sector = sector_first_data_sector(disk) +
                     (cluster * disk->mbr->sectors_per_cluster);
 
-    DBG4("Read from cluster %" PRIu32 " (sector %" PRIu32 ", count %"
-         PRIu32 "", cluster, sector, count);
+    DBG4("Read from cluster %" PRIu32 " (0x%08X), sector %" PRIu32 ", count %"
+         PRIu32 "", cluster, cluster, sector, count);
 
     amount = count * disk->mbr->sectors_per_cluster;
 

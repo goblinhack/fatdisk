@@ -195,6 +195,10 @@ unsigned char *file_read_from (const char *filename,
         return (0);
     }
 
+    if (opt_debug5) {
+        hex_dump(buffer, 0, len);
+    }
+
     close(fd);
 
     return (buffer);

@@ -104,6 +104,7 @@ void DBG(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 void DBG2(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 void DBG3(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 void DBG4(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
+void DBG5(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 void WARN(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 void ERR(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
@@ -246,6 +247,7 @@ void die(void);
 
 extern boolean opt_verbose;
 extern boolean opt_quiet;
+extern boolean opt_debug5;
 extern boolean opt_debug4;
 extern boolean opt_debug3;
 extern boolean opt_debug2;

@@ -29,6 +29,7 @@ boolean opt_debug;
 boolean opt_debug2;
 boolean opt_debug3;
 boolean opt_debug4;
+boolean opt_debug5;
 
 /*
  * Most common sector size.
@@ -86,6 +87,10 @@ static void usage (void)
     fprintf(stderr, "        --debug          : print internal debug info\n");
     fprintf(stderr, "        -debug           :\n");
     fprintf(stderr, "        -d               :\n");
+    fprintf(stderr, "        -dd              : more debugs\n");
+    fprintf(stderr, "        -ddd             : yet more debugs\n");
+    fprintf(stderr, "        -dddd            : and still more\n");
+    fprintf(stderr, "        -ddddd           : insane amount of debugs\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "        --offset         : offset to start of disk\n");
     fprintf(stderr, "        -offset          : e.g. -o 32256, -o 63s -o 0x7e00\n");
@@ -1163,6 +1168,75 @@ int32_t main (int32_t argc, char *argv[])
             opt_debug2 = true;
             opt_debug3 = true;
             opt_debug4 = true;
+            continue;
+        }
+
+        /*
+         * --ddddd
+         */
+        if (!strcmp(argv[i], "--ddddd") ||
+            !strcmp(argv[i], "-ddddd")) {
+
+            opt_debug  = true;
+            opt_debug2 = true;
+            opt_debug3 = true;
+            opt_debug4 = true;
+            opt_debug5 = true;
+            continue;
+        }
+
+        /*
+         * Also support -vv style verbosity as I keep forgetting to use dd
+         * given how often I use ssh with -vv.
+         */
+
+        /*
+         * --vv
+         */
+        if (!strcmp(argv[i], "--vv") ||
+            !strcmp(argv[i], "-vv")) {
+
+            opt_debug = true;
+            opt_debug2 = true;
+            continue;
+        }
+
+        /*
+         * --vvv
+         */
+        if (!strcmp(argv[i], "--vvv") ||
+            !strcmp(argv[i], "-vvv")) {
+
+            opt_debug = true;
+            opt_debug2 = true;
+            opt_debug3 = true;
+            continue;
+        }
+
+        /*
+         * --vvvv
+         */
+        if (!strcmp(argv[i], "--vvvv") ||
+            !strcmp(argv[i], "-vvvv")) {
+
+            opt_debug  = true;
+            opt_debug2 = true;
+            opt_debug3 = true;
+            opt_debug4 = true;
+            continue;
+        }
+
+        /*
+         * --vvvvv
+         */
+        if (!strcmp(argv[i], "--vvvvv") ||
+            !strcmp(argv[i], "-vvvvv")) {
+
+            opt_debug  = true;
+            opt_debug2 = true;
+            opt_debug3 = true;
+            opt_debug4 = true;
+            opt_debug5 = true;
             continue;
         }
 
