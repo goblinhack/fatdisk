@@ -83,6 +83,10 @@ typedef unsigned long int    uint64_t;
  * log.c
  */
 #define DIE(args...)                                                          \
+    if (die_with_usage) {                                                     \
+        usage();                                                              \
+    }                                                                         \
+                                                                              \
     DYING("Died at %s:%s():%u", __FILE__, __FUNCTION__, __LINE__);            \
     CROAK(args);                                                              \
     exit(1);
@@ -244,6 +248,7 @@ char *duplstr_(const char *in, const char *what, const char *func,
  */
 void quit(void);
 void die(void);
+void usage(void);
 
 extern boolean opt_verbose;
 extern boolean opt_quiet;
@@ -255,3 +260,4 @@ extern boolean opt_debug;
 extern boolean croaked;
 extern uint32_t opt_sector_size;
 extern uint32_t opt_sectors_per_cluster;
+extern boolean die_with_usage;

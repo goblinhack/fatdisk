@@ -15,7 +15,7 @@ EXE= # AUTOGEN
 LDLIBS= # AUTOGEN
 CFLAGS=$(COMPILER_FLAGS) $(COMPILER_WARN) # AUTOGEN
 LDLIBS=
-COMPILER_FLAGS+=-DVERSION=\"0.1.2\"
+COMPILER_FLAGS+=-DVERSION=\"1.0.0-beta\"
 
 #
 # Useful if on MacOS to do performance analysis with instruments

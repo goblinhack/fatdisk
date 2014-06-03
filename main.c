@@ -44,12 +44,12 @@ uint32_t opt_sectors_per_cluster;
 /*
  * Die and print usage message.
  */
-static boolean die_with_usage;
+boolean die_with_usage;
 
 /*
  * Tool usage.
  */
-static void usage (void)
+void usage (void)
 {
     fprintf(stderr,
 "fatdisk, version " VERSION "\n\n"
@@ -203,16 +203,7 @@ static void usage (void)
     fprintf(stderr, "\n");
     fprintf(stderr, "Written by Neil McGill, goblinhack@gmail.com, with special thanks\n");
     fprintf(stderr, "to Donald Sharp, Andy Dalton and Mike Woods\n");
-}
-
-/*
- * usage_short
- *
- * Short help
- */
-static void usage_short (void)
-{
-    fprintf(stderr, "Enter \"fatdisk --help\" for usage\n");
+    fprintf(stderr, "\nfatdisk, version " VERSION "\n\n");
 }
 
 /*
@@ -244,10 +235,6 @@ void quit (void)
 void die (void)
 {
     quit();
-
-    if (die_with_usage) {
-        usage_short();
-    }
 
     exit(1);
 }
