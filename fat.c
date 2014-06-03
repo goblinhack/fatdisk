@@ -2356,7 +2356,7 @@ static boolean file_extract (disk_t *disk, const char *filename,
                     last_ok_cluster + debug_clusters,
                     debug_clusters);
 
-                char *data = 
+                uint8_t *data = 
                     cluster_read(disk, last_ok_cluster + debug_clusters, 1);
                 hex_dump(data, 0, cluster_size(disk));
                 myfree(data);
