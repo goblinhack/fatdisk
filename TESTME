@@ -21,7 +21,7 @@ run()
 }
 
 log "Format 1G disk file with 2 DOS partitions. Put grub in MBR."
-run ../fatdisk mydisk.img format name FATDISK size 1G part 0 50% boot grub.img part 1 40% fat32
+run ../fatdisk mydisk.img format name FATDISK size 3G part 0 45% boot grub.img part 1 40% fat32
 if [ $? -ne 0 ]
 then
     exit 1
