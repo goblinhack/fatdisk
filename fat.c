@@ -482,7 +482,7 @@ redo:
     }
 
     ERR("Out of clusters, total clusters on disk, %u, "
-        "data sectors %lu, "
+        "data sectors %" PRIu64 ", "
         "sectors per cluster %u",
         total_clusters(disk),
         sector_count_data(disk),
