@@ -481,6 +481,13 @@ redo:
         goto redo;
     }
 
+    ERR("Out of clusters, total clusters on disk, %u, "
+        "data sectors %lu, "
+        "sectors per cluster %u",
+        total_clusters(disk),
+        sector_count_data(disk),
+        disk->mbr->sectors_per_cluster);
+
     return (0);
 }
 
