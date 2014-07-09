@@ -492,12 +492,106 @@ redo:
 }
 
 /*
+ * cluster_how_many_free
+ *
+ * How many free clusters are there on disk?
+ */
+uint64_t cluster_how_many_free (disk_t *disk)
+{
+    uint32_t fat_byte_offset;
+    uint32_t cluster_next;
+    uint32_t cluster;
+    uint8_t *fat;
+    uint64_t free = 0;
+
+    /*
+     * Try from the last cluster found to speed things up and give us
+     * a chance for things to be sequential.
+     */
+    for (cluster = 2; cluster < total_clusters(disk); cluster++) {
+        /*
+         * Find the array index of the current cluster.
+         */
+        if (fat_type(disk) == 12) {
+            /*
+             * Ignore root cluster if FAT32.
+             */
+            if (cluster == disk->mbr->fat.fat32.root_cluster) {
+                continue;
+            }
+
+            fat_byte_offset = cluster + (cluster / 2); // multiply by 1.5
+        } else if (fat_type(disk) == 16) {
+            fat_byte_offset = cluster * sizeof(uint16_t);
+        } else if (fat_type(disk) == 32) {
+            fat_byte_offset = cluster * sizeof(uint32_t);
+        } else {
+            DIE("bug");
+        }
+
+        /*
+         * Only look at the first FAT. I think this is ok. The others are
+         * backups.
+         */
+        fat = disk->fat;
+
+        fat_byte_offset = fat_byte_offset % fat_size_bytes(disk);
+
+        /*
+         * Find the cluster in this next array index.
+         */
+        if (fat_type(disk) == 12) {
+            cluster_next = *(uint16_t*) (fat + fat_byte_offset);
+
+            if (cluster & 0x0001) {
+                cluster_next = cluster_next >> 4;
+            } else {
+                cluster_next = cluster_next & 0x0FFF;
+            }
+
+        } else if (fat_type(disk) == 16) {
+            cluster_next = *(uint16_t*) (fat + fat_byte_offset);
+        } else if (fat_type(disk) == 32) {
+            cluster_next = (*((uint32_t*)
+                              (fat + fat_byte_offset))) & 0x0FFFFFFF;
+        } else {
+            DIE("bug");
+        }
+
+        if (!cluster_next) {
+            free++;
+        }
+    }
+
+    return (free);
+}
+
+/*
  * Read and cache the FAT
  */
 void fat_read (disk_t *disk)
 {
     if (disk->fat) {
         return;
+    }
+
+    if (disk->partition_set && disk->parts) {
+        switch (disk->parts[disk->partition]->os_id) {
+        case DISK_FAT12:
+        case DISK_FAT16:
+        case DISK_FAT16_LBA:
+        case DISK_FAT32:
+        case DISK_FAT32_LBA:
+            break;
+
+        default:
+            ERR("Cannot read fat at partition %u sector %" PRIu32 "", 
+                disk->partition,
+                sector_reserved_count(disk));
+
+            disk->fat = 0;
+            return;
+        }
     }
 
     DBG2("Read FAT, %" PRIu64 " sectors...",
@@ -507,7 +601,8 @@ void fat_read (disk_t *disk)
                             sector_reserved_count(disk),
                             fat_size_sectors(disk));
     if (!disk->fat) {
-        ERR("Cannot read fat at sector %" PRIu32 "", sector_reserved_count(disk));
+        ERR("Cannot read fat at sector %" PRIu32 "", 
+            sector_reserved_count(disk));
         return;
     }
 }

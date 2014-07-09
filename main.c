@@ -1601,9 +1601,51 @@ int32_t main (int32_t argc, char *argv[])
      * Command: summary
      */
     if (opt_disk_command_summary_set) {
-        disk_command_summary(disk, opt_filename,
-                             opt_disk_partition_set,
-                             opt_disk_partition);
+        if (!opt_disk_partition_set) {
+            uint32_t p;
+
+            disk_command_close(disk);
+
+            /*
+             * Reopen each partitin so we can read the size.
+             */
+            for (p = 0; p < MAX_PARTITON; p++) {
+                opt_disk_start_offset = 
+                                disk_command_query(opt_filename,
+                                                   p,
+                                                   true /* partition set */,
+                                                   false /* hunt */);
+
+                /*
+                 * Query the disk.
+                 */
+                disk = disk_command_open(opt_filename,
+                                         opt_disk_start_offset,
+                                         p,
+                                         true);
+                if (!disk) {
+                    DIE("disk open of partition %u %s failed", p, opt_filename);
+                }
+
+                /*
+                 * Summarize all partitions on the disk.
+                 */
+                disk_command_summary(disk, opt_filename,
+                                     true,
+                                     p,
+                                     p == 0 /* show header */,
+                                     p == MAX_PARTITON - 1 /* show trailer */);
+            }
+        } else {
+            /*
+             * Summarize only this one partition.
+             */
+            disk_command_summary(disk, opt_filename,
+                                 opt_disk_partition_set,
+                                 opt_disk_partition,
+                                 true /* show header */,
+                                 true /* show trailer */);
+        }
     }
 
     /*

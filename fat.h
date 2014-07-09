@@ -22,3 +22,4 @@ void fat_read(disk_t *disk);
 void fat_write(disk_t *disk);
 uint64_t fat_size_bytes(disk_t *disk);
 uint64_t fat_size_sectors(disk_t *disk);
+uint64_t cluster_how_many_free(disk_t *disk);

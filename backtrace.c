@@ -29,6 +29,10 @@ typedef struct traceback_ {
  */
 void backtrace_print (void)
 {
+    if (!opt_verbose) {
+        return;
+    }
+
 #ifndef WIN32
     void *array[10];
     int32_t size;

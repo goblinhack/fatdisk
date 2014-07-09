@@ -429,21 +429,26 @@ void disk_command_close (disk_t *disk)
 boolean
 disk_command_summary (disk_t *disk, const char *filename,
                       boolean partition_set,
-                      uint32_t partition)
+                      uint32_t partition,
+                      boolean show_header,
+                      boolean show_trailer)
 {
     const part_t empty_partition = {0};
     uint64_t size[MAX_PARTITON] = {0};
     uint32_t sectors_total = 0;
     uint64_t total_size = 0;
+    uint64_t free_space;
     uint32_t i;
 
-    printf("Disk: %s, ", disk->filename);
-    printf("%" PRIu32 " heads, ",
-            disk->mbr->nheads);
-    printf("%" PRIu32 " sec/track, ",
-            disk->mbr->sectors_per_track);
-    printf("%" PRIu32 " sec/cluster",
-            disk->mbr->sectors_per_cluster);
+    if (show_header) {
+        printf("Disk: %s, ", disk->filename);
+        printf("%" PRIu32 " heads, ",
+                disk->mbr->nheads);
+        printf("%" PRIu32 " sec/track, ",
+                disk->mbr->sectors_per_track);
+        printf("%" PRIu32 " sec/cluster",
+                disk->mbr->sectors_per_cluster);
+    }
 
     for (i = 0; i < MAX_PARTITON; i++) {
         size[i] = 
@@ -454,8 +459,10 @@ disk_command_summary (disk_t *disk, const char *filename,
         total_size += size[i];
     }
 
-    printf("\n");
-    printf("Device      Boot CylS,E HeadS,End  SecS,E     LBA  End     System\n");
+    if (show_header) {
+        printf("\n");
+        printf("Device      Boot CylS,E HeadS,End  SecS,E     LBA  End     System\n");
+    }
 
     for (i = 0; i < MAX_PARTITON; i++) {
         int64_t offset = (typeof(offset)) (PART_BASE + (sizeof(part_t) * i));
@@ -481,20 +488,42 @@ disk_command_summary (disk_t *disk, const char *filename,
         }
 
         /*
+         * Can only read the free space of the currently selected partition
+         * as it involves reading all the sectors. Use -p to see others.
+         */
+        boolean partition_has_fat = false;
+
+        switch (disk->parts[i]->os_id) {
+            case DISK_FAT12:
+            case DISK_FAT16:
+            case DISK_FAT16_LBA:
+            case DISK_FAT32:
+            case DISK_FAT32_LBA:
+                partition_has_fat = true;
+                break;
+
+            default:
+                partition_has_fat = false;
+                break;
+        }
+
+        /*
          * Read the disk name.
          */
         char volname[12];
 
-        if (fat_type(disk) == 32) {
-            strncpy(volname,
-                    (char*)disk->mbr->fat.fat32.volume_label,
-                    sizeof(disk->mbr->fat.fat32.volume_label));
-        } else if ((fat_type(disk) == 16) || (fat_type(disk) == 12)) {
-            strncpy(volname,
-                    (char*)disk->mbr->fat.fat16.volume_label,
-                    sizeof(disk->mbr->fat.fat16.volume_label));
-        } else {
-            *volname = '\0';
+        memset(volname, 0, sizeof(volname));
+
+        if (partition_has_fat) {
+            if (fat_type(disk) == 32) {
+                strncpy(volname,
+                        (char*)disk->mbr->fat.fat32.volume_label,
+                        sizeof(disk->mbr->fat.fat32.volume_label));
+            } else if ((fat_type(disk) == 16) || (fat_type(disk) == 12)) {
+                strncpy(volname,
+                        (char*)disk->mbr->fat.fat16.volume_label,
+                        sizeof(disk->mbr->fat.fat16.volume_label));
+            }
         }
 
         /*
@@ -539,24 +568,46 @@ disk_command_summary (disk_t *disk, const char *filename,
             printf("%" PRIu64 "KB", size / ONE_K);
         }
 
+        printf(", ");
+
+        /*
+         * If this is the first partition or one we specified, find out the 
+         * free space.
+         */
+        if (partition_has_fat && (partition_set || (!partition_set && !i))) {
+            free_space = cluster_how_many_free(disk) * cluster_size(disk);
+
+            if (free_space > ONE_GIG) {
+                printf("%2.2fGB", (float)free_space / (float)ONE_GIG);
+            } else if (free_space > (ONE_MEG)) {
+                printf("%" PRIu64 "MB", free_space / ONE_MEG);
+            } else {
+                printf("%" PRIu64 "KB", free_space / ONE_K);
+            }
+
+            printf(" free");
+        }
+
         printf("\n");
     }
 
-    printf("\nTotal size ");
+    if (show_trailer) {
+        printf("\nTotal size ");
 
-    if (total_size > ONE_GIG) {
-        printf("%2.2fGB", (float)total_size / (float)ONE_GIG);
-    } else if (total_size > ONE_MEG) {
-        printf("%" PRIu64 "MB", total_size / ONE_MEG);
-    } else {
-        printf("%" PRIu64 "KB", total_size / ONE_K);
+        if (total_size > ONE_GIG) {
+            printf("%2.2fGB", (float)total_size / (float)ONE_GIG);
+        } else if (total_size > ONE_MEG) {
+            printf("%" PRIu64 "MB", total_size / ONE_MEG);
+        } else {
+            printf("%" PRIu64 "KB", total_size / ONE_K);
+        }
+
+        printf(", %" PRIu64 " bytes", total_size);
+
+        printf(", total sectors %" PRIu32, sectors_total);
+
+        printf("\n");
     }
-
-    printf(", %" PRIu64 " bytes", total_size);
-
-    printf(", total sectors %" PRIu32, sectors_total);
-
-    printf("\n");
 
     return (true);
 }

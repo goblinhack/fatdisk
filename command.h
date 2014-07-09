@@ -24,7 +24,9 @@ disk_t *disk_command_format(const char *filename,
 
 boolean disk_command_summary(disk_t *, const char *filename,
                      boolean partition_set,
-                     uint32_t partition);
+                     uint32_t partition,
+                     boolean show_header,
+                     boolean show_trailer);
 
 uint64_t disk_command_query(const char *filename,
                             uint32_t partition,

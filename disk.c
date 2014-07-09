@@ -590,9 +590,24 @@ disk_size (disk_t *disk)
 uint32_t
 sector_size (disk_t *disk)
 {
-    if (!disk || !disk->mbr || !disk->mbr->sector_size) {
+    if (!disk || !disk->mbr || !disk->mbr->sector_size || 
+        !disk->parts ||
+        !disk->parts[disk->partition]) {
+
         return (opt_sector_size);
     }
+
+    switch (disk->parts[disk->partition]->os_id) {
+        case DISK_FAT12:
+        case DISK_FAT16:
+        case DISK_FAT16_LBA:
+        case DISK_FAT32:
+        case DISK_FAT32_LBA:
+            break;
+
+        default:
+            return (opt_sector_size);
+        }
 
     return (disk->mbr->sector_size);
 }
