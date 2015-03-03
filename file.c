@@ -414,18 +414,18 @@ boolean file_match (const char *regexp_in, const char *name_in, boolean is_dir)
                     tmp2[0] = '^';
                     tmp2[1] = 0;
                     strncat(regexp, tmp2,
-                            sizeof(regexp) - strlen(regexp));
+                            sizeof(regexp) - strlen(regexp) - 1);
                 }
             }
 
             if (regexp_in[c] == '*') {
                 strncat(regexp, "[a-z0-9_-]*",
-                        sizeof(regexp) - strlen(regexp));
+                        sizeof(regexp) - strlen(regexp) - 1);
             } else {
                 tmp2[0] = regexp_in[c];
                 tmp2[1] = 0;
                 strncat(regexp, tmp2,
-                        sizeof(regexp) - strlen(regexp));
+                        sizeof(regexp) - strlen(regexp) - 1);
             }
         }
 

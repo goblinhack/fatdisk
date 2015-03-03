@@ -27,15 +27,19 @@ static const uint32_t FAT_DIRENT_SIZE               = 32;
 static const uint32_t FAT_DOS_MAX_FILENAME_LEN      = 11;
 static const uint32_t FAT_VFAT_FILENAME_FRAG_LEN    = 13;
 static const uint32_t FAT_FILE_DELETE_CHAR          = 0xE5;
+#if 0
 static const uint32_t FAT_FILE_VFAT_CHAR            = 0x01;
+#endif
 
 /*
  * FAT file attr flags.
  */
+#if 0
 static const uint32_t FAT_ATTR_IS_READ_ONLY         = 0x01;
 static const uint32_t FAT_ATTR_IS_HIDDEN            = 0x02;
 static const uint32_t FAT_ATTR_IS_SYSTEM            = 0x04;
 static const uint32_t FAT_ATTR_IS_LABEL             = 0x08;
+#endif
 static const uint32_t FAT_ATTR_IS_DIR               = 0x10;
 static const uint32_t FAT_ATTR_IS_ARCHIVE           = 0x20;
 
