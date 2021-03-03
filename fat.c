@@ -57,7 +57,7 @@ uint32_t fat_type (disk_t *disk)
 {
     uint32_t fat_type;
 
-    if (disk->partition_set && disk->parts) {
+    if (disk->partition_set && disk->parts[disk->partition]) {
         switch (disk->parts[disk->partition]->os_id) {
             case DISK_FAT12:
                 return (12);
@@ -574,7 +574,7 @@ void fat_read (disk_t *disk)
         return;
     }
 
-    if (disk->partition_set && disk->parts) {
+    if (disk->partition_set && disk->parts[disk->partition]) {
         switch (disk->parts[disk->partition]->os_id) {
         case DISK_FAT12:
         case DISK_FAT16:

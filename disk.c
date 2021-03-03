@@ -591,7 +591,6 @@ uint32_t
 sector_size (disk_t *disk)
 {
     if (!disk || !disk->mbr || !disk->mbr->sector_size || 
-        !disk->parts ||
         !disk->parts[disk->partition]) {
 
         return (opt_sector_size);
